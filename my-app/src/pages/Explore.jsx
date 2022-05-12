@@ -1,29 +1,52 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import styled from 'styled-components';
 import Search from '../components/Search';
+// import useFetch from '../hooks/useFetch';
+import PersonCard from '../components/PersonCard';
 
-const API_URL = 'https://pokeapi.co/api/v2/pokemon';
+const ListOfPersons = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+
+  > a {
+    width: 25%;
+  }
+`;
+
+const API_URL = 'https://rickandmortyapi.com/api/character';
+
+// const postConfig = {
+//   initialUri: '/api/user/create',
+//   initialMethod: 'post',
+// };
 
 function Explore() {
-  const [pokemons, setPokemons] = useState([]);
+  // const { fetch, loading } = useFetch(postConfig);
+  const [persons, setPersons] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  const getPokemons = () => {
-    // consultar la api pokemon
-    fetch(API_URL)
+  const getPersons = (name = null) => {
+    const filterApi = name
+      ? `${API_URL}/?name=${name}`
+      : API_URL;
+
+    setLoading(true);
+    fetch(filterApi)
       .then(res => res.json())
       .then(data => {
         console.log('response: ', data);
-        setPokemons(data.results);
+        setPersons(data.results);
+        setLoading(false);
       })
   };
 
   useEffect(() => {
-    getPokemons();
+    getPersons();
   }, []);
 
-  const handleSearch = (pokemonName) => {
-    alert(pokemonName);
-    // getPokemons(pokemonName);
+  const handleSearch = (personName) => {
+    getPersons(personName)
   }
   
   return (
@@ -33,15 +56,15 @@ function Explore() {
         onSearch={handleSearch}
       />
       
-      <div>
-        {pokemons.map((pokemon) => (
-          <div key={pokemon.name}>
-            <Link to="/">
-              <h2>{pokemon.name}</h2>
-            </Link>
-          </div>
-        ))}
-      </div>
+      {loading ? (
+        <p>Cargando...</p>
+      ) : (
+        <ListOfPersons>
+          {persons.map((character) => (
+            <PersonCard key={character.id} {...character} />
+          ))}
+        </ListOfPersons>
+      )}
     </div>
   );
 }
