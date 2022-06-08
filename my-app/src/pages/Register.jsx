@@ -1,21 +1,27 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
 import React, { useState } from 'react';
 import Select from 'react-select';
 import { getMonths, getDays, getYears } from '../utils/mixed';
 
+const initialForm = {
+  name: '',
+  phone: '',
+  month: '',
+  day: '',
+  year: '',
+};
+
 function Register() {
-  const [form, setForm] = useState({
-    name: '',
-    phone: '',
-    month: '',
-    day: '',
-    year: '',
+  const [form, setForm] = useState(() => {
+    const localForm = window.localStorage.getItem('form');
+    return localForm ? JSON.parse(localForm) : initialForm;
   });
 
   const handleFormChange = (event) => {
     const { name, value } = event.target;
     setForm({
       ...form,
-      [name]: value
+      [name]: value,
     });
   };
 
@@ -23,12 +29,14 @@ function Register() {
     setForm({
       ...form,
       [name]: event.value,
-    })
+    });
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
     console.log({ form });
+    // const serializeForm = JSON.stringify(form);
+    // window.localStorage.setItem('form', serializeForm);
   };
 
   return (
